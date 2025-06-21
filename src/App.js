@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, memo } from 'react';
+import {
+  UserGroupIcon, ArchiveBoxIcon, ArrowTrendingUpIcon, ClockIcon, BeakerIcon, TagIcon, UsersIcon, CircleStackIcon, BuildingLibraryIcon, CurrencyDollarIcon, CalendarDaysIcon, SunIcon, MoonIcon, SparklesIcon
+} from '@heroicons/react/24/outline'; // Added more icons for variety
 import AuthLayout from './components/AuthLayout';
 import AuthRegisterForm from './components/AuthRegisterForm';
 import AuthLoginForm from './components/AuthLoginForm';
@@ -11,7 +14,7 @@ import EconomicManagementPage from './components/EconomicManagementPage';
 import PersonnelManagementPage from './components/PersonnelManagementPage';
 import SubscriptionPlansPage from './components/SubscriptionPlansPage';
 import ProductionControlPage from './components/ProductionControlPage';
-import SupplierClientManagement from './components/EconomicManagement/SupplierClientManagement'; // Importar el componente
+import SupplierClientManagement from './components/EconomicManagement/SupplierClientManagement';
 
 import { classifyAnimalAge } from './utils/helpers';
 import { loadFromLocalStorage, saveToLocalStorage } from './utils/localStorageHelpers';
@@ -26,10 +29,25 @@ import { productionRecords as initialProductionRecordsData } from './mock/produc
 import { defaultSuppliersData } from './mock/suppliers';
 import { defaultClientsData } from './mock/clients';
 
+// Memoized Page Components
+const AnimalRegistrationPageComponent = memo(AnimalRegistrationPage);
+const SanitaryControlPageComponent = memo(SanitaryControlPage);
+const ReproductiveControlPageComponent = memo(ReproductiveControlPage);
+const ProductionControlPageComponent = memo(ProductionControlPage);
+const InventoryPageComponent = memo(InventoryPage);
+const EconomicManagementPageComponent = memo(EconomicManagementPage);
+const PersonnelManagementPageComponent = memo(PersonnelManagementPage);
+const SupplierClientManagementComponent = memo(SupplierClientManagement);
+const SubscriptionPlansPageComponent = memo(SubscriptionPlansPage);
+// Auth components are small, memoizing them might be overkill but let's be consistent for now.
+const AuthLoginFormMemoized = memo(AuthLoginForm);
+const AuthRegisterFormMemoized = memo(AuthRegisterForm);
+
+
 const SUBSCRIPTION_PLANS = {
   "Gratuito": {
-    maxAnimals: 10,				
-    maxEmployees: 1,				
+    maxAnimals: 10,
+    maxEmployees: 1,
     maxInventoryItems: 15,
     price: 0,
     benefits: ["Registro básico", "Reportes limitados"]
@@ -347,24 +365,18 @@ const App = () => {
     }
   };
 
-  const totalAnimals = animals.length;
-  const totalCows = animals.filter(animal => animal.sexo === 'hembra').length;
-  const totalBulls = animals.filter(animal => animal.sexo === 'macho').length;
-  
-  // Vacas preñadas (estado reproductivo 'preñada')
-  const pregnantCows = animals.filter(animal => animal.sexo === 'hembra' && animal.estadoReproductivo === 'preñada');
-  
-  // Vacas en producción (estado reproductivo 'produccion')
-  const productionCows = animals.filter(animal => animal.sexo === 'hembra' && animal.estadoReproductivo === 'produccion').length;
-  
-  // Vacas secas (estado reproductivo 'seca')
-  const dryCows = animals.filter(animal => animal.sexo === 'hembra' && animal.estadoReproductivo === 'seca').length;
-  
-  // Vacas vacías (estado reproductivo 'vacia')
-  const emptyCows = animals.filter(animal => animal.sexo === 'hembra' && animal.estadoReproductivo === 'vacia').length;
+  const totalAnimals = useMemo(() => animals.length, [animals]);
+  const totalCows = useMemo(() => animals.filter(animal => animal.sexo === 'hembra').length, [animals]);
+  const totalBulls = useMemo(() => animals.filter(animal => animal.sexo === 'macho').length, [animals]);
 
-  // Vacas preñadas y secas (menos de 100 días para parir)
-  const pregnantAndDryCows = pregnantCows.filter(cow => {
+  const pregnantCowsArray = useMemo(() => animals.filter(animal => animal.sexo === 'hembra' && animal.estadoReproductivo === 'preñada'), [animals]);
+  const pregnantCowsCount = useMemo(() => pregnantCowsArray.length, [pregnantCowsArray]);
+
+  const productionCows = useMemo(() => animals.filter(animal => animal.sexo === 'hembra' && animal.estadoReproductivo === 'produccion').length, [animals]);
+  const dryCows = useMemo(() => animals.filter(animal => animal.sexo === 'hembra' && animal.estadoReproductivo === 'seca').length, [animals]);
+  const emptyCows = useMemo(() => animals.filter(animal => animal.sexo === 'hembra' && animal.estadoReproductivo === 'vacia').length, [animals]);
+
+  const pregnantAndDryCows = useMemo(() => pregnantCowsArray.filter(cow => {
     const calvingRecord = calvingSchedule.find(record => record.animalId === cow.id);
     if (calvingRecord && calvingRecord.expectedCalvingDate) {
       const today = new Date();
@@ -374,42 +386,41 @@ const App = () => {
       return diffDays <= 100;
     }
     return false;
-  }).length;
+  }).length, [pregnantCowsArray, calvingSchedule]);
 
-  const totalCalves = animals.filter(animal => classifyAnimalAge(animal.fechaNacimiento, animal.sexo).includes('Terner')).length;
-  const totalMautes = animals.filter(animal => classifyAnimalAge(animal.fechaNacimiento, animal.sexo).includes('Maut')).length;
-  const totalNovillas = animals.filter(animal => classifyAnimalAge(animal.fechaNacimiento, animal.sexo).includes('Novilla')).length;
-  const totalToros = animals.filter(animal => classifyAnimalAge(animal.fechaNacimiento, animal.sexo) === 'Toro').length;
+  const totalCalves = useMemo(() => animals.filter(animal => classifyAnimalAge(animal.fechaNacimiento, animal.sexo).includes('Terner')).length, [animals]);
+  const totalMautes = useMemo(() => animals.filter(animal => classifyAnimalAge(animal.fechaNacimiento, animal.sexo).includes('Maut')).length, [animals]);
+  const totalNovillas = useMemo(() => animals.filter(animal => classifyAnimalAge(animal.fechaNacimiento, animal.sexo).includes('Novilla')).length, [animals]);
+  const totalToros = useMemo(() => animals.filter(animal => classifyAnimalAge(animal.fechaNacimiento, animal.sexo) === 'Toro').length, [animals]);
 
   // Datos para los gráficos de producción
-  const milkProductionData = productionRecords
+  const milkProductionData = useMemo(() => productionRecords
     .filter(record => record.tipoProduccion === 'leche')
     .sort((a, b) => new Date(a.fechaRegistro) - new Date(b.fechaRegistro))
-    .map(record => ({ date: record.fechaRegistro, value: record.cantidad }));
+    .map(record => ({ date: record.fechaRegistro, value: record.cantidad })), [productionRecords]);
 
-  const meatProductionData = productionRecords
+  const meatProductionData = useMemo(() => productionRecords
     .filter(record => record.tipoProduccion === 'carne')
     .sort((a, b) => new Date(a.fechaRegistro) - new Date(b.fechaRegistro))
-    .map(record => ({ date: record.fechaRegistro, value: record.cantidad }));
+    .map(record => ({ date: record.fechaRegistro, value: record.cantidad })), [productionRecords]);
 
   // Función para dibujar un gráfico simple (simulado con div)
-  const renderSimpleChart = (data, color) => {
+  const renderSimpleChart = (data, barColorClass) => {
     if (data.length < 2) {
-      return <p className="text-sm text-gray-500">No hay suficientes datos para mostrar el gráfico.</p>;
+      return <p className="text-sm text-gray-500 dark:text-gray-400">No hay suficientes datos para mostrar el gráfico.</p>;
     }
     const maxVal = Math.max(...data.map(d => d.value));
     const minVal = Math.min(...data.map(d => d.value));
     const range = maxVal - minVal;
 
     return (
-      <div className="flex items-end h-24 border-b border-l border-gray-300 p-1">
+      <div className="flex items-end h-32 md:h-48 border-b border-l border-gray-300 dark:border-gray-600 p-1">
         {data.map((d, index) => (
           <div
             key={index}
-            className="w-4 mx-0.5"
+            className={`w-5 md:w-6 mx-0.5 ${barColorClass}`} // Use Tailwind class for bar color
             style={{
-              height: `${range > 0 ? ((d.value - minVal) / range) * 80 + 20 : 50}%`,
-              backgroundColor: color,
+              height: `${range > 0 ? ((d.value - minVal) / range) * 80 + 20 : 50}%`, // Keep dynamic height
               transition: 'height 0.3s ease-in-out',
             }}
             title={`${d.date}: ${d.value}`}
@@ -425,9 +436,9 @@ const App = () => {
       return (
         <AuthLayout>
           {currentPage === 'login' ? (
-            <AuthLoginForm onLoginSuccess={handleLoginSuccess} onNavigateToRegister={() => setCurrentPage('register')} registeredUsers={registeredUsers} />
+            <AuthLoginFormMemoized onLoginSuccess={handleLoginSuccess} onNavigateToRegister={() => setCurrentPage('register')} registeredUsers={registeredUsers} />
           ) : (
-            <AuthRegisterForm onRegisterSuccess={handleRegisterUser} onNavigateToLogin={() => setCurrentPage('login')} />
+            <AuthRegisterFormMemoized onRegisterSuccess={handleRegisterUser} onNavigateToLogin={() => setCurrentPage('login')} />
           )}
         </AuthLayout>
       );
@@ -436,7 +447,7 @@ const App = () => {
       switch (currentPage) {
         case 'animalRegistration':
           content = (
-            <AnimalRegistrationPage
+            <AnimalRegistrationPageComponent
               onRegisterAnimal={handleRegisterAnimal}
               onUpdateAnimalProduction={handleUpdateAnimalProduction}
               animals={animals}
@@ -447,7 +458,7 @@ const App = () => {
           break;
         case 'sanitaryControl':
           content = (
-            <SanitaryControlPage
+            <SanitaryControlPageComponent
               inventoryItems={inventory}
               onUpdateInventoryQuantity={handleUpdateInventoryQuantity}
               animals={animals}
@@ -466,7 +477,7 @@ const App = () => {
           break;
        case 'reproductiveControl':
          content = (
-           <ReproductiveControlPage
+           <ReproductiveControlPageComponent
              animals={animals}
              onUpdateAnimalProduction={handleUpdateAnimalProduction}
              onRegisterAnimal={handleRegisterAnimal}
@@ -488,7 +499,7 @@ const App = () => {
          break;
         case 'productionControl':
           content = (
-            <ProductionControlPage
+            <ProductionControlPageComponent
               animals={animals}
               onUpdateAnimalProduction={handleUpdateAnimalProduction}
               onRegisterProductionRecord={handleRegisterProductionRecord}
@@ -501,7 +512,7 @@ const App = () => {
           break;
         case 'inventory':
           content = (
-            <InventoryPage
+            <InventoryPageComponent
               inventoryItems={inventory}
               onAddItem={handleAddItemToInventory}
               onUpdateItemQuantity={handleUpdateInventoryQuantity}
@@ -516,7 +527,7 @@ const App = () => {
           break;
         case 'economicManagement':
           content = (
-            <EconomicManagementPage
+            <EconomicManagementPageComponent
               transactions={transactions}
               onAddTransaction={handleAddTransaction}
               onDeleteTransaction={handleDeleteTransaction}
@@ -541,7 +552,7 @@ const App = () => {
           break;
         case 'personnelManagement':
           content = (
-            <PersonnelManagementPage
+            <PersonnelManagementPageComponent
               employees={employees}
               tasks={tasks}
               onAddEmployee={handleAddEmployee}
@@ -561,7 +572,7 @@ const App = () => {
           break;
         case 'supplierClientManagement': // Nueva ruta
           content = (
-            <SupplierClientManagement
+            <SupplierClientManagementComponent
               suppliers={suppliers}
               clients={clients}
               debts={debts}
@@ -577,7 +588,7 @@ const App = () => {
           break;
         case 'subscriptionPlans':
           content = (
-            <SubscriptionPlansPage
+            <SubscriptionPlansPageComponent
               currentPlan={currentUser ? currentUser.subscriptionPlan : 'Gratuito'}
               onUpdateSubscription={handleUpdateSubscription}
               plans={SUBSCRIPTION_PLANS}
@@ -586,118 +597,78 @@ const App = () => {
           break;
         case 'dashboard':
         default:
+          // Helper for dashboard cards
+          const DashboardCard = ({ title, value, subText, icon: Icon }) => (
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-card shadow-lg card-interactive">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-lg font-semibold text-gray-700 dark:text-gray-300">{title}</h4>
+                {Icon && <Icon className="h-8 w-8 text-brand-secondary dark:text-brand-secondary-dark" />}
+              </div>
+              <p className="text-4xl font-bold text-brand-primary dark:text-brand-primary-dark">{value}</p>
+              {subText && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{subText}</p>}
+            </div>
+          );
+
           content = (
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold mb-4">Bienvenido al Dashboard, {currentUser ? currentUser.fullName : 'Usuario'}!</h3>
-              <p className="text-gray-700">Tu plan actual es: <span className="font-bold">{currentUser ? currentUser.subscriptionPlan : 'N/A'}</span></p>
-              <p className="text-700">Selecciona una opción del menú lateral para empezar a gestionar tu finca.</p>
+            <div className="space-y-6">
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-card shadow-lg card-interactive">
+                <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Bienvenido al Dashboard, {currentUser ? currentUser.fullName : 'Usuario'}!
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Tu plan actual es: <span className="font-bold text-brand-secondary dark:text-emerald-400">{currentUser ? currentUser.subscriptionPlan : 'N/A'}</span>
+                </p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Selecciona una opción del menú lateral para empezar a gestionar tu finca.
+                </p>
+              </div>
               
-              <div className="mt-6 mb-8 p-4 border rounded-lg bg-blue-50">
-                <h4 className="text-lg font-semibold mb-3">Personalizar Logo de Finca</h4>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-card shadow-lg">
+                <h4 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">Personalizar Logo de Finca</h4>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleLogoUpload}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input-default" // Using the new input style
                 />
                 {logoUrl && (
                   <div className="mt-4 text-center">
-                    <p className="text-sm text-gray-700 mb-2">Logo actual:</p>
-                    <img src={logoUrl} alt="Logo de la Finca" className="max-h-24 mx-auto rounded-lg shadow-md" />
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Logo actual:</p>
+                    <img src={logoUrl} alt="Logo de la Finca" className="max-h-24 mx-auto rounded-md shadow-md" />
                   </div>
                 )}
               </div>
 
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {/* Tarjeta de Total Animales */}
-                <div className="p-6 bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 flex flex-col justify-between">
-                  <h4 className="font-semibold text-lg">Total Animales</h4>
-                  <p className="text-4xl font-bold mt-2">{totalAnimals}</p>
-                  <p className="text-sm opacity-80 mt-1">({getRemaining('animal')} restantes)</p>
-                </div>
-                {/* Tarjeta de Productos */}
-                <div className="p-6 bg-gradient-to-br from-green-500 to-green-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 flex flex-col justify-between">
-                  <h4 className="font-semibold text-lg">Productos</h4>
-                  <p className="text-4xl font-bold mt-2">{inventory.length}</p>
-                  <p className="text-sm opacity-80 mt-1">({getRemaining('inventoryItem')} restantes)</p>
-                </div>
-                {/* Tarjeta de Empleados */}
-                <div className="p-6 bg-gradient-to-br from-yellow-500 to-yellow-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 flex flex-col justify-between">
-                  <h4 className="font-semibold text-lg">Empleados</h4>
-                  <p className="text-4xl font-bold mt-2">{employees.length}</p>
-                  <p className="text-sm opacity-80 mt-1">({getRemaining('employee')} restantes)</p>
-                </div>
-                {/* Tarjeta de Vacas en Producción */}
-                <div className="p-6 bg-gradient-to-br from-purple-500 to-purple-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 flex flex-col justify-between">
-                  <h4 className="font-semibold text-lg">Vacas en Producción</h4>
-                  <p className="text-4xl font-bold mt-2">{productionCows}</p>
-                  <p className="text-sm opacity-80 mt-1">Vacas lecheras activas</p>
-                </div>
-                {/* Tarjeta de Vacas Preñadas */}
-                <div className="p-6 bg-gradient-to-br from-pink-500 to-pink-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 flex flex-col justify-between">
-                  <h4 className="font-semibold text-lg">Vacas Preñadas</h4>
-                  <p className="text-4xl font-bold mt-2">{pregnantCows.length}</p>
-                  <p className="text-sm opacity-80 mt-1">Próximos partos</p>
-                </div>
-                {/* Tarjeta de Vacas Secas */}
-                <div className="p-6 bg-gradient-to-br from-orange-500 to-orange-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 flex flex-col justify-between">
-                  <h4 className="font-semibold text-lg">Vacas Secas</h4>
-                  <p className="text-4xl font-bold mt-2">{dryCows}</p>
-                  <p className="text-sm opacity-80 mt-1">En período de descanso</p>
-                </div>
-                {/* Tarjeta de Vacas Preñadas y Secas */}
-                <div className="p-6 bg-gradient-to-br from-amber-500 to-amber-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 flex flex-col justify-between">
-                  <h4 className="font-semibold text-lg">Vacas Preñadas y Secas</h4>
-                  <p className="text-4xl font-bold mt-2">{pregnantAndDryCows}</p>
-                  <p className="text-sm opacity-80 mt-1">Menos de 100 días para parir</p>
-                </div>
-                {/* Tarjeta de Vacas Vacías */}
-                <div className="p-6 bg-gradient-to-br from-red-500 to-red-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 flex flex-col justify-between">
-                  <h4 className="font-semibold text-lg">Vacas Vacías</h4>
-                  <p className="text-4xl font-bold mt-2">{emptyCows}</p>
-                  <p className="text-sm opacity-80 mt-1">Listas para inseminación</p>
-                </div>
-                {/* Tarjeta de Terneros */}
-                <div className="p-6 bg-gradient-to-br from-teal-500 to-teal-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 flex flex-col justify-between">
-                  <h4 className="font-semibold text-lg">Terneros</h4>
-                  <p className="text-4xl font-bold mt-2">{totalCalves}</p>
-                  <p className="text-sm opacity-80 mt-1">Crías jóvenes</p>
-                </div>
-                {/* Tarjeta de Mautes */}
-                <div className="p-6 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 flex flex-col justify-between">
-                  <h4 className="font-semibold text-lg">Mautes</h4>
-                  <p className="text-4xl font-bold mt-2">{totalMautes}</p>
-                  <p className="text-sm opacity-80 mt-1">Animales en crecimiento</p>
-                </div>
-                {/* Tarjeta de Novillas */}
-                <div className="p-6 bg-gradient-to-br from-cyan-500 to-cyan-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 flex flex-col justify-between">
-                  <h4 className="font-semibold text-lg">Novillas</h4>
-                  <p className="text-4xl font-bold mt-2">{totalNovillas}</p>
-                  <p className="text-sm opacity-80 mt-1">Hembras jóvenes para cría</p>
-                </div>
-                {/* Tarjeta de Toros */}
-                <div className="p-6 bg-gradient-to-br from-gray-500 to-gray-700 text-white rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 flex flex-col justify-between">
-                  <h4 className="font-semibold text-lg">Toros</h4>
-                  <p className="text-4xl font-bold mt-2">{totalToros}</p>
-                  <p className="text-sm opacity-80 mt-1">Machos reproductores</p>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <DashboardCard title="Total Animales" value={totalAnimals} subText={`(${getRemaining('animal')} restantes)`} icon={UserGroupIcon} />
+                <DashboardCard title="Inventario" value={inventory.length} subText={`(${getRemaining('inventoryItem')} restantes)`} icon={ArchiveBoxIcon} />
+                <DashboardCard title="Empleados" value={employees.length} subText={`(${getRemaining('employee')} restantes)`} icon={UsersIcon} />
+                <DashboardCard title="Vacas en Producción" value={productionCows} subText="Lecheras activas" icon={ArrowTrendingUpIcon} />
+                <DashboardCard title="Vacas Preñadas" value={pregnantCowsCount} subText="Próximos partos" icon={CalendarDaysIcon} />
+                <DashboardCard title="Vacas Secas" value={dryCows} subText="Período descanso" icon={MoonIcon} />
+                <DashboardCard title="Preñadas y Secas (<100d)" value={pregnantAndDryCows} subText="Menos de 100 días para parir" icon={ClockIcon} />
+                <DashboardCard title="Vacas Vacías" value={emptyCows} subText="Listas para servicio" icon={SparklesIcon} />
+                <DashboardCard title="Terneros(as)" value={totalCalves} subText="Crías jóvenes" icon={TagIcon} />
+                <DashboardCard title="Mautes(as)" value={totalMautes} subText="En crecimiento" icon={TagIcon} />
+                <DashboardCard title="Novillas" value={totalNovillas} subText="Jóvenes para cría" icon={TagIcon} />
+                <DashboardCard title="Toros" value={totalToros} subText="Machos reproductores" icon={TagIcon} />
               </div>
 
               {/* Gráficos de Producción */}
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 bg-white rounded-xl shadow-lg border border-gray-200">
-                  <h4 className="font-semibold text-lg text-gray-800 mb-4">Producción de Leche (Últimos Registros)</h4>
-                  {renderSimpleChart(milkProductionData, '#34D399')}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-card shadow-lg card-interactive">
+                  <h4 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Producción de Leche (Últimos Registros)</h4>
+                  {renderSimpleChart(milkProductionData, 'bg-brand-primary')}
                 </div>
-                <div className="p-6 bg-white rounded-xl shadow-lg border border-gray-200">
-                  <h4 className="font-semibold text-lg text-gray-800 mb-4">Producción de Carne (Últimos Registros)</h4>
-                  {renderSimpleChart(meatProductionData, '#FBBF24')}
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-card shadow-lg card-interactive">
+                  <h4 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Producción de Carne (Últimos Registros)</h4>
+                  {renderSimpleChart(meatProductionData, 'bg-brand-secondary')}
                 </div>
               </div>
 
               <button
                 onClick={() => handleNavigate('subscriptionPlans')}
-                className="mt-6 bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors"
+                className="btn btn-primary" // Using new button style
               >
                 Ver Planes de Suscripción
               </button>
@@ -705,7 +676,7 @@ const App = () => {
           );
           break;
       }
-      return <DashboardLayout onNavigate={handleNavigate}>{content}</DashboardLayout>;
+      return <DashboardLayout onNavigate={handleNavigate} currentPage={currentPage}>{content}</DashboardLayout>;
     }
   };
 

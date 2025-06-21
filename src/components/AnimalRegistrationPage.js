@@ -346,227 +346,151 @@ const AnimalRegistrationPage = ({ onRegisterAnimal, onUpdateAnimalProduction, an
   }, [genealogyTree, currentUser, logoUrl]); // Dependencias para useCallback
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h3 className="text-xl font-semibold mb-4">Registro Animal Avanzado</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input
-          type="text"
-          name="id"
-          placeholder="ID del Animal (Único)"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          value={animalData.id}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="name"
-          placeholder="Nombre del Animal"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          value={animalData.name}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="raza"
-          placeholder="Raza"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          value={animalData.raza}
-          onChange={handleInputChange}
+    <div className="space-y-6">
+      <h3 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Registro Animal Avanzado</h3>
 
-        />
-        <input
-          type="number"
-          name="peso"
-          placeholder="Peso"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          value={animalData.peso}
-          onChange={handleInputChange}
-
-        />
-        <select
-          name="sexo"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          value={animalData.sexo}
-          onChange={handleInputChange}
-        >
-          <option value="">Selecciona Sexo</option>
-          <option value="macho">Macho</option>
-          <option value="hembra">Hembra</option>
-        </select>
-        <input
-          type="date"
-          name="fechaNacimiento"
-          placeholder="Fecha de Nacimiento"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          value={animalData.fechaNacimiento}
-          onChange={handleInputChange}
-        />
-        {animalData.edadClasificada && (
-          <input
-            type="text"
-            name="edadClasificada"
-            placeholder="Clasificación de Edad"
-            className="w-full px-4 py-2 border rounded-lg bg-gray-100 cursor-not-allowed"
-            value={animalData.edadClasificada}
-            readOnly
-          />
-        )}
-        <input
-          type="date"
-          name="fechaCompra"
-          placeholder="Fecha de Compra (Opcional)"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          value={animalData.fechaCompra}
-          onChange={handleInputChange}
-        />
-        <select
-          name="tipoProduccion"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          value={animalData.tipoProduccion}
-          onChange={handleInputChange}
-        >
-          <option value="">Tipo de Producción</option>
-          <option value="carne">Carne</option>
-          <option value="leche">Leche</option>
-        </select>
-        {animalData.tipoProduccion === 'leche' && animalData.sexo === 'hembra' && (
-          <input
-            type="number"
-            name="dailyMilk"
-            placeholder="Litros Promedio Diarios"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-            value={animalData.dailyMilk}
-            onChange={handleInputChange}
-          />
-        )}
-        <input
-          type="text"
-          name="idpadre"
-          placeholder="ID Padre (Opcional)"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          value={animalData.idpadre}
-          onChange={handleInputChange}
-        />
-        <input
-          type="text"
-          name="idmadre"
-          placeholder="ID Madre (Opcional)"
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          value={animalData.idmadre}
-          onChange={handleInputChange}
-        />
-        <div className="col-span-full">
-          <label className="block text-gray-700 text-sm font-bold mb-2">Foto del Animal</label>
-          <input
-            type="file"
-            name="foto"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-            onChange={handleFileChange}
-          />
+      {/* Registrar Nuevo Animal Section */}
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-card shadow-lg card-interactive">
+        <h4 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-6">Registrar Nuevo Animal</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <label htmlFor="id" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ID del Animal (Único)</label>
+            <input type="text" name="id" id="id" placeholder="ID del Animal (Único)" className="input-default" value={animalData.id} onChange={handleInputChange} />
+          </div>
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre del Animal</label>
+            <input type="text" name="name" id="name" placeholder="Nombre del Animal" className="input-default" value={animalData.name} onChange={handleInputChange} />
+          </div>
+          <div>
+            <label htmlFor="raza" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Raza</label>
+            <input type="text" name="raza" id="raza" placeholder="Raza" className="input-default" value={animalData.raza} onChange={handleInputChange} />
+          </div>
+          <div>
+            <label htmlFor="peso" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Peso (kg)</label>
+            <input type="number" name="peso" id="peso" placeholder="Peso" className="input-default" value={animalData.peso} onChange={handleInputChange} />
+          </div>
+          <div>
+            <label htmlFor="sexo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sexo</label>
+            <select name="sexo" id="sexo" className="input-default" value={animalData.sexo} onChange={handleInputChange}>
+              <option value="">Selecciona Sexo</option>
+              <option value="macho">Macho</option>
+              <option value="hembra">Hembra</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="fechaNacimiento" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha de Nacimiento</label>
+            <input type="date" name="fechaNacimiento" id="fechaNacimiento" className="input-default" value={animalData.fechaNacimiento} onChange={handleInputChange} />
+          </div>
+          {animalData.edadClasificada && (
+            <div>
+              <label htmlFor="edadClasificada" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Clasificación de Edad</label>
+              <input type="text" name="edadClasificada" id="edadClasificada" className="input-default bg-gray-100 dark:bg-gray-700 cursor-not-allowed" value={animalData.edadClasificada} readOnly />
+            </div>
+          )}
+          <div>
+            <label htmlFor="fechaCompra" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha de Compra (Opcional)</label>
+            <input type="date" name="fechaCompra" id="fechaCompra" className="input-default" value={animalData.fechaCompra} onChange={handleInputChange} />
+          </div>
+          <div>
+            <label htmlFor="tipoProduccion" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo de Producción</label>
+            <select name="tipoProduccion" id="tipoProduccion" className="input-default" value={animalData.tipoProduccion} onChange={handleInputChange}>
+              <option value="">Tipo de Producción</option>
+              <option value="carne">Carne</option>
+              <option value="leche">Leche</option>
+            </select>
+          </div>
+          {animalData.tipoProduccion === 'leche' && animalData.sexo === 'hembra' && (
+            <div>
+              <label htmlFor="dailyMilk" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Litros Promedio Diarios</label>
+              <input type="number" name="dailyMilk" id="dailyMilk" placeholder="Litros Promedio Diarios" className="input-default" value={animalData.dailyMilk} onChange={handleInputChange} />
+            </div>
+          )}
+          <div>
+            <label htmlFor="idpadre" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ID Padre (Opcional)</label>
+            <input type="text" name="idpadre" id="idpadre" placeholder="ID Padre (Opcional)" className="input-default" value={animalData.idpadre} onChange={handleInputChange} />
+          </div>
+          <div>
+            <label htmlFor="idmadre" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ID Madre (Opcional)</label>
+            <input type="text" name="idmadre" id="idmadre" placeholder="ID Madre (Opcional)" className="input-default" value={animalData.idmadre} onChange={handleInputChange} />
+          </div>
+          <div className="md:col-span-2">
+            <label htmlFor="foto" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Foto del Animal</label>
+            <input type="file" name="foto" id="foto" className="input-default" onChange={handleFileChange} />
+          </div>
+        </div>
+        <div className="mt-6 flex space-x-3">
+          <button onClick={handleSubmit} className="btn btn-primary">Registrar Animal</button>
+          <button onClick={() => handleDownloadPDF(animalData, currentUser, logoUrl)} className="btn btn-default">Descargar Ficha PDF</button>
         </div>
       </div>
-      <button
-        onClick={handleSubmit}
-        className="mt-6 bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors mr-2"
-      >
-        Registrar Animal
-      </button>
-      <button
-        onClick={() => handleDownloadPDF(animalData, currentUser, logoUrl)} // Pasar el logoUrl
-        className="mt-6 bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
-      >
-        Descargar Ficha PDF
-      </button>
 
-      <div className="mt-8 pt-4 border-t border-gray-200">
-        <h4 className="text-lg font-semibold mb-3">Actualizar Producción/Estado</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            type="text"
-            name="id"
-            placeholder="ID del Animal a Actualizar"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-            value={animalData.id}
-            onChange={handleInputChange}
-          />
-          <select
-            name="estadoReproductivo"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-            value={animalData.estadoReproductivo}
-            onChange={handleInputChange}
-          >
-            <option value="desarrollo">En Desarrollo</option>
-            <option value="en_produccion">En Producción</option>
-            <option value="seca">Seca</option>
-            <option value="preñada">Preñada</option>
-          </select>
+      {/* Actualizar Producción/Estado Section */}
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-card shadow-lg card-interactive">
+        <h4 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-6">Actualizar Producción/Estado</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <label htmlFor="updateId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ID del Animal a Actualizar</label>
+            <input type="text" name="id" id="updateId" placeholder="ID del Animal a Actualizar" className="input-default" value={animalData.id} onChange={handleInputChange} />
+          </div>
+          <div>
+            <label htmlFor="updateEstadoReproductivo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nuevo Estado Reproductivo</label>
+            <select name="estadoReproductivo" id="updateEstadoReproductivo" className="input-default" value={animalData.estadoReproductivo} onChange={handleInputChange}>
+              <option value="desarrollo">En Desarrollo</option>
+              <option value="en_produccion">En Producción</option>
+              <option value="seca">Seca</option>
+              <option value="preñada">Preñada</option>
+            </select>
+          </div>
           {animalData.estadoReproductivo === 'en_produccion' && animalData.tipoProduccion === 'leche' && (
-            <input
-              type="number"
-              name="dailyMilk"
-              placeholder="Litros de leche diarios"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-              value={animalData.dailyMilk}
-              onChange={handleInputChange}
-            />
+             <div>
+              <label htmlFor="updateDailyMilk" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Litros de leche diarios</label>
+              <input type="number" name="dailyMilk" id="updateDailyMilk" placeholder="Litros de leche diarios" className="input-default" value={animalData.dailyMilk} onChange={handleInputChange} />
+            </div>
           )}
         </div>
-        <button
-          onClick={handleUpdateProduction}
-          className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Actualizar Producción
-        </button>
+        <button onClick={handleUpdateProduction} className="btn btn-primary mt-6">Actualizar Producción</button>
       </div>
 
-      <div className="mt-8 pt-4 border-t border-gray-200">
-        <h4 className="text-lg font-semibold mb-3">Árbol Genealógico</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <select
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-            value={selectedAnimalForGenealogy}
-            onChange={(e) => setSelectedAnimalForGenealogy(e.target.value)}
-          >
-            <option value="">Selecciona Animal para Genealogía</option>
-            {animals.map(animal => (
-              <option key={animal.id} value={animal.id}>{animal.name} ({animal.id})</option>
-            ))}
-          </select>
-          <button
-            onClick={handleViewGenealogy}
-            className="bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            Ver Árbol Genealógico
-          </button>
+      {/* Árbol Genealógico Section */}
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-card shadow-lg card-interactive">
+        <h4 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-6">Árbol Genealógico</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 items-center">
+          <div>
+            <label htmlFor="genealogyAnimal" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Seleccionar Animal</label>
+            <select id="genealogyAnimal" className="input-default" value={selectedAnimalForGenealogy} onChange={(e) => setSelectedAnimalForGenealogy(e.target.value)}>
+              <option value="">Selecciona Animal para Genealogía</option>
+              {animals.map(animal => (
+                <option key={animal.id} value={animal.id}>{animal.name} ({animal.id})</option>
+              ))}
+            </select>
+          </div>
+          <button onClick={handleViewGenealogy} className="btn btn-primary self-end">Ver Árbol Genealógico</button>
         </div>
 
         {genealogyTree && (
-          <div className="mt-4 p-4 border rounded-lg bg-gray-50">
-            <h5 className="font-semibold text-gray-800 mb-4">Árbol Genealógico de {genealogyTree.name} ({genealogyTree.id})</h5>
-            
+          <div className="mt-6 p-4 border rounded-card bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+            <h5 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Genealogía de {genealogyTree.name} ({genealogyTree.id})</h5>
             <div className="flex flex-col items-center space-y-6">
               {/* Nodo Principal */}
-              <div className="relative p-4 bg-blue-100 border border-blue-300 rounded-lg shadow-md text-center w-64">
-                <p className="font-bold text-lg text-blue-800">{genealogyTree.name} ({genealogyTree.id})</p>
-                <p className="text-sm text-gray-700">{genealogyTree.raza}, {genealogyTree.sexo}</p>
-                <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-blue-300"></div>
+              <div className="relative p-4 bg-blue-100 dark:bg-blue-800 border border-blue-300 dark:border-blue-600 rounded-lg shadow-md text-center w-64">
+                <p className="font-bold text-lg text-blue-800 dark:text-blue-200">{genealogyTree.name} ({genealogyTree.id})</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300">{genealogyTree.raza}, {genealogyTree.sexo}</p>
+                {/* Visual connector can be enhanced with ::before/::after if pure CSS, or skip for simplicity */}
               </div>
 
               {/* Padres */}
               {(genealogyTree.father || genealogyTree.mother) && (
                 <div className="flex justify-center space-x-8 w-full">
                   {genealogyTree.father && (
-                    <div className="relative p-4 bg-green-100 border border-green-300 rounded-lg shadow-md text-center w-64">
-                      <p className="font-bold text-lg text-green-800">Padre: {genealogyTree.father.name} ({genealogyTree.father.id})</p>
-                      <p className="text-sm text-gray-700">{genealogyTree.father.raza}, {genealogyTree.father.sexo}</p>
-                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-green-300"></div>
+                    <div className="relative p-4 bg-green-100 dark:bg-green-800 border border-green-300 dark:border-green-600 rounded-lg shadow-md text-center w-64">
+                      <p className="font-bold text-lg text-green-800 dark:text-green-200">Padre: {genealogyTree.father.name} ({genealogyTree.father.id})</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300">{genealogyTree.father.raza}, {genealogyTree.father.sexo}</p>
                     </div>
                   )}
                   {genealogyTree.mother && (
-                    <div className="relative p-4 bg-pink-100 border border-pink-300 rounded-lg shadow-md text-center w-64">
-                      <p className="font-bold text-lg text-pink-800">Madre: {genealogyTree.mother.name} ({genealogyTree.mother.id})</p>
-                      <p className="text-sm text-gray-700">{genealogyTree.mother.raza}, {genealogyTree.mother.sexo}</p>
-                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-transparent border-b-pink-300"></div>
+                    <div className="relative p-4 bg-pink-100 dark:bg-pink-800 border border-pink-300 dark:border-pink-600 rounded-lg shadow-md text-center w-64">
+                      <p className="font-bold text-lg text-pink-800 dark:text-pink-200">Madre: {genealogyTree.mother.name} ({genealogyTree.mother.id})</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300">{genealogyTree.mother.raza}, {genealogyTree.mother.sexo}</p>
                     </div>
                   )}
                 </div>
@@ -575,25 +499,21 @@ const AnimalRegistrationPage = ({ onRegisterAnimal, onUpdateAnimalProduction, an
               {/* Hijos */}
               {genealogyTree.children.length > 0 && (
                 <div className="w-full text-center mt-6">
-                  <h5 className="font-semibold text-gray-800 mb-4">Hijos Directos:</h5>
+                  <h5 className="font-semibold text-gray-800 dark:text-gray-100 mb-4">Hijos Directos:</h5>
                   <div className="flex flex-wrap justify-center gap-4">
                     {genealogyTree.children.map(child => (
-                      <div key={child.id} className="p-3 bg-yellow-100 border border-yellow-300 rounded-lg shadow-sm text-center w-48">
-                        <p className="font-bold text-md text-yellow-800">{child.name} ({child.id})</p>
-                        <p className="text-sm text-gray-700">{child.raza}, {child.sexo}</p>
+                      <div key={child.id} className="p-3 bg-yellow-100 dark:bg-yellow-800 border border-yellow-300 dark:border-yellow-600 rounded-lg shadow-sm text-center w-48">
+                        <p className="font-bold text-md text-yellow-800 dark:text-yellow-200">{child.name} ({child.id})</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300">{child.raza}, {child.sexo}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
             </div>
-
-            <button
-              onClick={handleDownloadGenealogyPDF}
-              className="mt-6 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors shadow-md"
-            >
-              Descargar Árbol (PDF)
-            </button>
+            <div className="mt-6 text-center">
+              <button onClick={handleDownloadGenealogyPDF} className="btn btn-secondary">Descargar Árbol (PDF)</button>
+            </div>
           </div>
         )}
       </div>
